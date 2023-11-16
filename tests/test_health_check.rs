@@ -1,3 +1,5 @@
+use newsletter::configuration::get_configuration;
+use sqlx::{Connection, PgConnection};
 use std::net::TcpListener;
 fn spawn_app() -> String {
     let listener =
@@ -24,8 +26,12 @@ async fn health_check_works() {
 #[tokio::test]
 async fn subscribe_returns_a_200_for_a_valid_form_data() {
     let app_address = spawn_app();
+    let configuration = get_configuration().expect("error getting configuration");
+    let connection_string = configuration.database.connection_string();
+    let mut connection = PgConnection::connect(&connection_string)
+        .await
+        .expect("Error in connecting to the database");
     let client = reqwest::Client::new();
-
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
     let response = client
         .post(&format!("{}/subscriptions", &app_address))
@@ -36,6 +42,12 @@ async fn subscribe_returns_a_200_for_a_valid_form_data() {
         .expect("error sending form");
 
     assert_eq!(200, response.status().as_u16());
+    let saved = sqlx::query!("SELECT email, name FROM subscriptions",)
+        .fetch_one(&mut connection)
+        .await
+        .expect("Failed to fetch saved subscription.");
+    assert_eq!(saved.email, "ursula_le_guin@gmail.com");
+    assert_eq!(saved.name, "le guin");
 }
 
 #[tokio::test]

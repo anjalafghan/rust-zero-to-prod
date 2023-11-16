@@ -1,6 +1,6 @@
 use actix_web::{web, HttpResponse};
 
-pub async fn subscribe(form: web::Form<FormData>) -> HttpResponse {
+pub async fn subscribe(_form: web::Form<FormData>) -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 #[derive(serde::Deserialize)]

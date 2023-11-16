@@ -1,7 +1,10 @@
+use newsletter::configuration::get_configuration;
 use newsletter::startup::run;
 use std::net::TcpListener;
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:0").expect("error setting up listener");
+    let configuration = get_configuration().expect("Error getting config");
+    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let listener = TcpListener::bind(address)?;
     run(listener)?.await
 }
