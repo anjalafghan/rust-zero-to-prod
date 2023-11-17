@@ -17,5 +17,7 @@ tokio = { version = "1", features = ["full"] }
 serde = {version =  "1.0.192", features = ["derive"] }
 config = { version = "0.11.0", features = [] }
 sqlx = { version = "0.7", default-features = false, features = ["runtime-tokio-rustls", "macros", "postgres", "uuid", "chrono", "migrate"] }
+uuid = { version = "1.5.0", features = [] }
+chrono = "0.4.31"
 [dev-dependencies]
 reqwest = "0.11.22"
